@@ -53,7 +53,6 @@ def create_visualizations(data, x_col, y_col, plot_type):
     elif plot_type == '3D Scatter Plot':
         z_col = st.selectbox("Select Z-axis column", options=data.columns)
         fig = px.scatter_3d(data, x=x_col, y=y_col, z=z_col)
-
     st.plotly_chart(fig)
 
 # Function to find correlations
@@ -68,31 +67,28 @@ def make_predictions(data, target_col, model_type):
     if target_col in data.columns:
         X = data.drop(target_col, axis=1)
         y = data[target_col]
-
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
-
         if model_type == 'Linear Regression':
             model = LinearRegression()
         elif model_type == 'Multiple Regression':
             model = LinearRegression()
         elif model_type == 'Logistic Regression':
             model = LogisticRegression()
-
         model.fit(X_train, y_train)
         predictions = model.predict(X_test)
-
         st.write(f"Mean Squared Error: {mean_squared_error(y_test, predictions)}")
         st.write(f"R^2 Score: {r2_score(y_test, predictions)}")
+        if model_type == 'Logistic Regression':
+            accuracy = accuracy_score(y_test, predictions.round())
+            st.write(f"Accuracy: {accuracy}")
 
 # Function to perform advanced statistical tests
 def advanced_stats(data):
     st.write("### Advanced Statistical Analysis")
-
     # t-test
     st.write("#### t-test")
     group_col = st.selectbox("Select column for grouping (t-test)", options=data.columns)
     value_col = st.selectbox("Select numeric column for t-test", options=data.select_dtypes(include='number').columns)
-
     groups = data[group_col].unique()
     if len(groups) == 2:
         group1 = data[data[group_col] == groups[0]][value_col]
@@ -102,12 +98,10 @@ def advanced_stats(data):
         st.write(f"p-value: {p_val}")
     else:
         st.write("t-test requires exactly two groups.")
-
     # chi-square test
     st.write("#### Chi-Square Test")
     cat_col1 = st.selectbox("Select first categorical column for chi-square", options=data.select_dtypes(include='object').columns)
     cat_col2 = st.selectbox("Select second categorical column for chi-square", options=data.select_dtypes(include='object').columns)
-
     contingency_table = pd.crosstab(data[cat_col1], data[cat_col2])
     chi2, p, dof, ex = stats.chi2_contingency(contingency_table)
     st.write(f"Chi2: {chi2}")
@@ -139,53 +133,42 @@ if uploaded_file is not None:
     data = load_data(uploaded_file)
     st.write("### Input Data")
     st.write(data)
-
     # Sidebar options
     st.sidebar.header("Filter Options")
     x_col = st.sidebar.selectbox("Select X-axis column", options=data.columns)
     y_col = st.sidebar.selectbox("Select Y-axis column", options=data.columns)
     plot_type = st.sidebar.radio("Select plot type", options=['Bar Chart', 'Line Plot', 'Histogram', 'Scatter Plot', 'Box Plot', '3D Scatter Plot'])
-
     if st.sidebar.checkbox("Apply Numeric Filter"):
         num_col = st.sidebar.selectbox("Select Numeric Column", options=data.select_dtypes(include='number').columns)
         min_val = st.sidebar.number_input("Minimum Value", value=float(data[num_col].min()))
         max_val = st.sidebar.number_input("Maximum Value", value=float(data[num_col].max()))
         data = data[(data[num_col] >= min_val) & (data[num_col] <= max_val)]
-
     if st.sidebar.checkbox("Apply Category Filter"):
         cat_col = st.sidebar.selectbox("Select Category Column", options=data.select_dtypes(include='object').columns)
         categories = st.sidebar.multiselect("Select Categories", options=data[cat_col].unique())
         data = data[data[cat_col].isin(categories)]
-
     # Descriptive statistics
     descriptive_stats(data)
-
     # Visualizations
     create_visualizations(data, x_col, y_col, plot_type)
-
     # Correlations
     st.write("### Correlations")
     find_correlations(data)
-
     # Predictions
     st.write("### Predictions")
     target_col = st.sidebar.selectbox("Select target column for predictions", options=data.columns)
     model_type = st.sidebar.radio("Select model type", options=['Linear Regression', 'Multiple Regression', 'Logistic Regression'])
     if st.sidebar.button("Make Predictions"):
         make_predictions(data, target_col, model_type)
-
     # Advanced Statistics
     advanced_stats(data)
-
     # Download data
     download_data(data)
-
     # Custom functions input
     st.write("### Custom Functions")
     custom_function = st.text_area("Enter custom function (use 'df' as the dataframe variable)")
     if st.button("Apply Custom Function"):
         exec(custom_function)
-
     # PDF Report
     generate_report(data)
 
