@@ -123,16 +123,99 @@ def generate_report(data):
 # Main app
 st.title("Interactive Data Analysis Web App")
 
-# User input for data entry
-data_input = st.text_area("Enter your data (comma-separated values for multiple columns)")
-if data_input:
-    try:
-        data = pd.read_csv(io.StringIO(data_input))
-        st.write("### Input Data")
-        st.write(data)
-    except Exception as e:
-        st.error(f"Error processing data: {e}")
+# User authentication (placeholder)
+st.write("## User Authentication")
+st.write("Login system coming soon!")
 
-# Upload data
-uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
-if
+# User input for data
+input_type = st.radio("Choose input type", ["File Upload", "Text/Number Input"])
+if input_type == "File Upload":
+    uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
+    if uploaded_file is not None:
+        data = load_data(uploaded_file)
+else:
+    user_input = st.text_area("Enter your data (comma-separated values)", "1,2,3\n4,5,6")
+    data = pd.read_csv(io.StringIO(user_input), header=None)
+
+if 'data' in locals():
+    st.write("### Input Data")
+    st.write(data)
+
+    # Sidebar options
+    st.sidebar.header("Filter Options")
+    x_col = st.sidebar.selectbox("Select X-axis column", options=data.columns)
+    y_col = st.sidebar.selectbox("Select Y-axis column", options=data.columns)
+    plot_type = st.sidebar.radio("Select plot type", options=['Bar Chart', 'Line Plot', 'Histogram', 'Scatter Plot', 'Box Plot', '3D Scatter Plot'])
+
+    if st.sidebar.checkbox("Apply Numeric Filter"):
+        num_col = st.sidebar.selectbox("Select Numeric Column", options=data.select_dtypes(include='number').columns)
+        min_val = st.sidebar.number_input("Minimum Value", value=float(data[num_col].min()))
+        max_val = st.sidebar.number_input("Maximum Value", value=float(data[num_col].max()))
+        data = data[(data[num_col] >= min_val) & (data[num_col] <= max_val)]
+
+    if st.sidebar.checkbox("Apply Category Filter"):
+        cat_col = st.sidebar.selectbox("Select Category Column", options=data.select_dtypes(include='object').columns)
+        categories = st.sidebar.multiselect("Select Categories", options=data[cat_col].unique())
+        data = data[data[cat_col].isin(categories)]
+
+    # Descriptive statistics
+    descriptive_stats(data)
+
+    # Visualizations
+    create_visualizations(data, x_col, y_col, plot_type)
+
+    # Correlations
+    st.write("### Correlations")
+    find_correlations(data)
+
+    # Predictions
+    st.write("### Predictions")
+    target_col = st.sidebar.selectbox("Select target column for predictions", options=data.columns)
+    model_type = st.sidebar.radio("Select model type", options=['Linear Regression', 'Multiple Regression', 'Logistic Regression'])
+    if st.sidebar.button("Make Predictions"):
+        make_predictions(data, target_col, model_type)
+
+    # Advanced Statistics
+    advanced_stats(data)
+
+    # Download data
+    download_data(data)
+
+    # Custom functions input
+    st.write("### Custom Functions")
+    custom_function = st.text_area("Enter custom function (use 'df' as the dataframe variable)")
+    if st.button("Apply Custom Function"):
+        exec(custom_function)
+
+    # PDF Report
+    generate_report(data)
+
+# Theme customization
+st.sidebar.header("Theme Customization")
+theme = st.sidebar.radio("Select Theme", options=["Light", "Dark"])
+if theme == "Dark":
+    st.markdown(
+        """
+        <style>
+        body {
+            background-color: #1e1e1e;
+            color: white;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+# Error handling (example)
+try:
+    # Example operation that might fail
+    pass
+except Exception as e:
+    st.error(f"An error occurred: {e}")
+
+# Progress bar and spinners (example)
+with st.spinner("Processing..."):
+    # Simulate a long process
+    import time
+    time.sleep(2)
+    st.success("Done!")
