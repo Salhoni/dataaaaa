@@ -16,7 +16,8 @@ import base64
 st.set_page_config(
     page_title="Interactive Data Analysis Web App",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
+    theme={"primaryColor": "#1f77b4"}
 )
 
 # Function to load the dataset
@@ -122,22 +123,16 @@ def generate_report(data):
 # Main app
 st.title("Interactive Data Analysis Web App")
 
-# User authentication (placeholder)
-st.write("## User Authentication")
-st.write("Login system coming soon!")
+# User input for data entry
+data_input = st.text_area("Enter your data (comma-separated values for multiple columns)")
+if data_input:
+    try:
+        data = pd.read_csv(io.StringIO(data_input))
+        st.write("### Input Data")
+        st.write(data)
+    except Exception as e:
+        st.error(f"Error processing data: {e}")
 
 # Upload data
 uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
-if uploaded_file is not None:
-    data = load_data(uploaded_file)
-    st.write("### Input Data")
-    st.write(data)
-    # Sidebar options
-    st.sidebar.header("Filter Options")
-    x_col = st.sidebar.selectbox("Select X-axis column", options=data.columns)
-    y_col = st.sidebar.selectbox("Select Y-axis column", options=data.columns)
-    plot_type = st.sidebar.radio("Select plot type", options=['Bar Chart', 'Line Plot', 'Histogram', 'Scatter Plot', 'Box Plot', '3D Scatter Plot'])
-    if st.sidebar.checkbox("Apply Numeric Filter"):
-        num_col = st.sidebar.selectbox("Select Numeric Column", options=data.select_dtypes(include='number').columns)
-        min_val = st.sidebar.number_input("Minimum Value", value=float(data[num_col].min()))
-        max
+if
