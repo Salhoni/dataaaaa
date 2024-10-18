@@ -12,7 +12,7 @@ from scipy import stats
 import io
 import base64
 
-# Set page configuration
+# Set page configuration at the very top
 st.set_page_config(
     page_title="Interactive Data Analysis Web App",
     layout="wide",
@@ -165,56 +165,4 @@ if 'data' in locals():
     create_visualizations(data, x_col, y_col, plot_type)
 
     # Correlations
-    st.write("### Correlations")
-    find_correlations(data)
-
-    # Predictions
-    st.write("### Predictions")
-    target_col = st.sidebar.selectbox("Select target column for predictions", options=data.columns)
-    model_type = st.sidebar.radio("Select model type", options=['Linear Regression', 'Multiple Regression', 'Logistic Regression'])
-    if st.sidebar.button("Make Predictions"):
-        make_predictions(data, target_col, model_type)
-
-    # Advanced Statistics
-    advanced_stats(data)
-
-    # Download data
-    download_data(data)
-
-    # Custom functions input
-    st.write("### Custom Functions")
-    custom_function = st.text_area("Enter custom function (use 'df' as the dataframe variable)")
-    if st.button("Apply Custom Function"):
-        exec(custom_function)
-
-    # PDF Report
-    generate_report(data)
-
-# Theme customization
-st.sidebar.header("Theme Customization")
-theme = st.sidebar.radio("Select Theme", options=["Light", "Dark"])
-if theme == "Dark":
-    st.markdown(
-        """
-        <style>
-        body {
-            background-color: #1e1e1e;
-            color: white;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-
-# Error handling (example)
-try:
-    # Example operation that might fail
-    pass
-except Exception as e:
-    st.error(f"An error occurred: {e}")
-
-# Progress bar and spinners (example)
-with st.spinner("Processing..."):
-    import time
-    time.sleep(2)
-    st.success("Done!")
+    st.write("### Correlations
