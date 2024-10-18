@@ -16,7 +16,8 @@ import base64
 st.set_page_config(
     page_title="Interactive Data Analysis Web App",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
+    theme={"primaryColor": "#1f77b4"}
 )
 
 # Function to load the dataset
@@ -214,4 +215,6 @@ except Exception as e:
 
 # Progress bar and spinners (example)
 with st.spinner("Processing..."):
-    # Simulate a long process
+    import time
+    time.sleep(2)
+    st.success("Done!")
