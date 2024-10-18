@@ -16,8 +16,7 @@ import base64
 st.set_page_config(
     page_title="Interactive Data Analysis Web App",
     layout="wide",
-    initial_sidebar_state="expanded",
-    theme={"primaryColor": "#1f77b4"}
+    initial_sidebar_state="expanded"
 )
 
 # Function to load the dataset
@@ -141,63 +140,4 @@ if uploaded_file is not None:
     if st.sidebar.checkbox("Apply Numeric Filter"):
         num_col = st.sidebar.selectbox("Select Numeric Column", options=data.select_dtypes(include='number').columns)
         min_val = st.sidebar.number_input("Minimum Value", value=float(data[num_col].min()))
-        max_val = st.sidebar.number_input("Maximum Value", value=float(data[num_col].max()))
-        data = data[(data[num_col] >= min_val) & (data[num_col] <= max_val)]
-    if st.sidebar.checkbox("Apply Category Filter"):
-        cat_col = st.sidebar.selectbox("Select Category Column", options=data.select_dtypes(include='object').columns)
-        categories = st.sidebar.multiselect("Select Categories", options=data[cat_col].unique())
-        data = data[data[cat_col].isin(categories)]
-    # Descriptive statistics
-    descriptive_stats(data)
-    # Visualizations
-    create_visualizations(data, x_col, y_col, plot_type)
-    # Correlations
-    st.write("### Correlations")
-    find_correlations(data)
-    # Predictions
-    st.write("### Predictions")
-    target_col = st.sidebar.selectbox("Select target column for predictions", options=data.columns)
-    model_type = st.sidebar.radio("Select model type", options=['Linear Regression', 'Multiple Regression', 'Logistic Regression'])
-    if st.sidebar.button("Make Predictions"):
-        make_predictions(data, target_col, model_type)
-    # Advanced Statistics
-    advanced_stats(data)
-    # Download data
-    download_data(data)
-    # Custom functions input
-    st.write("### Custom Functions")
-    custom_function = st.text_area("Enter custom function (use 'df' as the dataframe variable)")
-    if st.button("Apply Custom Function"):
-        exec(custom_function)
-    # PDF Report
-    generate_report(data)
-
-# Theme customization
-st.sidebar.header("Theme Customization")
-theme = st.sidebar.radio("Select Theme", options=["Light", "Dark"])
-if theme == "Dark":
-    st.markdown(
-        """
-        <style>
-        body {
-            background-color: #1e1e1e;
-            color: white;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-
-# Error handling (example)
-try:
-    # Example operation that might fail
-    pass
-except Exception as e:
-    st.error(f"An error occurred: {e}")
-
-# Progress bar and spinners (example)
-with st.spinner("Processing..."):
-    # Simulate a long process
-    import time
-    time.sleep(2)
-    st.success("Done!")
+        max
